@@ -50,6 +50,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   )
 };
 
+bool is_mac_mode(void) {
+    // This is the opposite of the QMK standard, but we'll leave it for backwards compatibility.
+    return keymap_config.swap_ralt_rgui == false;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case RGBRST:
@@ -59,6 +64,38 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
           rgblight_enable();
         }
       #endif
+      break;
+  
+    case KC_LANG2:
+      if (record->event.pressed) {
+        if (is_mac_mode()) {
+          register_code(KC_LANG2);
+        } else {
+           register_code(KC_LSFT);
+           register_code(KC_F12);
+           unregister_code(KC_F12);
+           unregister_code(KC_LSFT);
+        }
+      } else {
+        unregister_code(KC_LANG2);
+      }
+      return false;
+      break;
+
+    case KC_LANG1:
+      if (record->event.pressed) {
+        if (is_mac_mode()) {
+          register_code(KC_LANG1);
+        } else {
+           register_code(KC_LSFT);
+           register_code(KC_F11);
+           unregister_code(KC_F11);
+           unregister_code(KC_LSFT);
+        }
+      } else {
+        unregister_code(KC_LANG1);
+      }
+      return false;
       break;
   }
   return true;
